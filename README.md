@@ -71,7 +71,7 @@ docker-compose run --name sub_${CLEANTOPIC} --rm kafka \
 ```
 
 ## Kafka Manager interface
-* open the manager interface in you browser : (http://localhost:9000/addCluster)
+* open the manager interface in you browser : http://localhost:9000/addCluster
 * add a new cluster
   * Cluster name : _whatever_
   * Cluster Zookeeper hosts : _zookeeper:2181_
