@@ -1,6 +1,10 @@
+# kd
+
 Clone repository
 ------------------
-
+```
+git clone git@github.com:ledroide/kd.git
+```
 
 Run a Kafka cluster including 4 KAFKANODES + zookeeper + kafka-manager
 ---------------------------------------------------------------------
@@ -42,7 +46,8 @@ Use producers and consumers
 ---------------------------
 * store locally the topics list :
 ```
-docker-compose run kafka /opt/kafka/bin/kafka-topics.sh --zookeeper zookeeper:2181 --list > /tmp/alltopics
+docker-compose run kafka /opt/kafka/bin/kafka-topics.sh \
+--zookeeper zookeeper:2181 --list > /tmp/alltopics
 ```
 * pick up a topic from the list, store it in a file and in a variable
 ```
@@ -58,4 +63,11 @@ export AVGTOPIC=$(/bin/cat /tmp/onetopic) && export CLEANTOPIC="${AVGTOPIC//[$'\
 docker-compose run --name sub_${CLEANTOPIC} --rm kafka /opt/kafka/bin/kafka-console-consumer.sh --zookeeper zookeeper:2181 --from-beginning --topic ${CLEANTOPIC}
 ```
 
-
+Kafka Manager interface
+-----------------------
+* open the manager interface in you browser : http://localhost:9000/addCluster
+* add a new cluster
+** Cluster name : whatever
+** Cluster Zookeeper hosts : zookeeper:2181
+** enable JMX polling
+* select the new cluster
