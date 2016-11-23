@@ -17,7 +17,7 @@ docker-compose build --pull
 ```
 docker-compose up -d 
 ```
-* scale up to 4 kafka nodes :
+* scale up to 4 kafka nodes (until the compose file does not support any _scale_ directive) :
 ```
 export KAFKANODES=4
 docker-compose scale kafka=${KAFKANODES}
@@ -34,27 +34,40 @@ docker-compose scale kafka=${KAFKANODES}
 NAMELENGHT=10
 export NBTOPIC=100
 for TopicID in $(/usr/bin/pwgen -AB10 ${NAMELENGHT} ${NBTOPIC}) 
-  do docker-compose run kafka /opt/kafka/bin/kafka-topics.sh --create --zookeeper zookeeper:2181 --replication-factor $((RANDOM%(${KAFKANODES}-1)+2)) --partitions $((RANDOM%(${KAFKANODES}-1)+2)) --topic ${TopicID}
+  do docker-compose run kafka /opt/kafka/bin/kafka-topics.sh --create \
+   --zookeeper zookeeper:2181 \
+   --replication-factor $((RANDOM%(${KAFKANODES}-1)+2)) \
+   --partitions $((RANDOM%(${KAFKANODES}-1)+2)) \
+   --topic ${TopicID}
 done
 ```
 ## use producers and consumers
 * store locally the topics list :
 ```
 docker-compose run kafka /opt/kafka/bin/kafka-topics.sh \
---zookeeper zookeeper:2181 --list > /tmp/alltopics
+ --zookeeper zookeeper:2181 --list > /tmp/alltopics
 ```
 * pick up a topic from the list, store it in a file and in a variable
 ```
-/bin/sed "$((RANDOM%(${NBTOPIC})+1))q;d" /tmp/alltopics  > /tmp/onetopic && export AVGTOPIC=$(/bin/cat /tmp/onetopic) && export CLEANTOPIC="${AVGTOPIC//[$'\t\r\n ']}" ; echo "Current random topic is $CLEANTOPIC"
+/bin/sed "$((RANDOM%(${NBTOPIC})+1))q;d" /tmp/alltopics  > /tmp/onetopic && \
+ export AVGTOPIC=$(/bin/cat /tmp/onetopic) && \
+ export CLEANTOPIC="${AVGTOPIC//[$'\t\r\n ']}" ; \
+ echo "Current random topic is $CLEANTOPIC"
 ```
 * start a console as an interactive producer to the random topic :
 ```
-docker-compose run --name "pub_${CLEANTOPIC}" --rm kafka kafka-console-producer.sh --broker-list kafka:9092 --topic ${CLEANTOPIC}
+docker-compose run --name "pub_${CLEANTOPIC}" --rm kafka \
+ kafka-console-producer.sh --broker-list kafka:9092 --topic ${CLEANTOPIC}
 ```
 * and another console with a consumer console :
 ```
-export AVGTOPIC=$(/bin/cat /tmp/onetopic) && export CLEANTOPIC="${AVGTOPIC//[$'\t\r\n ']}" ; echo "Current random topic is $CLEANTOPIC"
-docker-compose run --name sub_${CLEANTOPIC} --rm kafka /opt/kafka/bin/kafka-console-consumer.sh --zookeeper zookeeper:2181 --from-beginning --topic ${CLEANTOPIC}
+export AVGTOPIC=$(/bin/cat /tmp/onetopic) && \
+ export CLEANTOPIC="${AVGTOPIC//[$'\t\r\n ']}" ; \ 
+ echo "Current random topic is $CLEANTOPIC"
+docker-compose run --name sub_${CLEANTOPIC} --rm kafka \
+ /opt/kafka/bin/kafka-console-consumer.sh \
+ --zookeeper zookeeper:2181 \
+ --from-beginning --topic ${CLEANTOPIC}
 ```
 
 ## Kafka Manager interface
