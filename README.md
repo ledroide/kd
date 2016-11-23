@@ -1,13 +1,10 @@
-# kd
+# kd : kafka on docker
 
-Clone repository
-------------------
+## clone repository
 ```
 git clone git@github.com:ledroide/kd.git
 ```
-
-Run a Kafka cluster including 4 KAFKANODES + zookeeper + kafka-manager
----------------------------------------------------------------------
+## run a Kafka cluster including 4 KAFKANODES + zookeeper + kafka-manager
 * pwd near the compose file
 ```
 cd kd
@@ -25,14 +22,13 @@ docker-compose up -d
 export KAFKANODES=4
 docker-compose scale kafka=${KAFKANODES}
 ```
-
-Create some random topics
-------------------------
+## create some random topics
 * install pwgen (here with ubuntu _yakkety yak_ ; if older version use apt-get instead, if redhat use yum) :
 ```
 [ -x /usr/bin/pwgen ] || ( apt update && apt install pwgen )
 ```
-Pwgen is a password generator that we hijack here to generate topic names.
+> pwgen is a password generator that we hijack here to generate topic names
+
 * create random topics with some random parameters :
 ```
 NAMELENGHT=10
@@ -41,9 +37,7 @@ for TopicID in $(/usr/bin/pwgen -AB10 ${NAMELENGHT} ${NBTOPIC})
   do docker-compose run kafka /opt/kafka/bin/kafka-topics.sh --create --zookeeper zookeeper:2181 --replication-factor $((RANDOM%(${KAFKANODES}-1)+2)) --partitions $((RANDOM%(${KAFKANODES}-1)+2)) --topic ${TopicID}
 done
 ```
-
-Use producers and consumers
----------------------------
+## use producers and consumers
 * store locally the topics list :
 ```
 docker-compose run kafka /opt/kafka/bin/kafka-topics.sh \
@@ -63,11 +57,10 @@ export AVGTOPIC=$(/bin/cat /tmp/onetopic) && export CLEANTOPIC="${AVGTOPIC//[$'\
 docker-compose run --name sub_${CLEANTOPIC} --rm kafka /opt/kafka/bin/kafka-console-consumer.sh --zookeeper zookeeper:2181 --from-beginning --topic ${CLEANTOPIC}
 ```
 
-Kafka Manager interface
------------------------
-* open the manager interface in you browser : http://localhost:9000/addCluster
+## Kafka Manager interface
+* open the manager interface in you browser : [http://localhost:9000/addCluster]
 * add a new cluster
-** Cluster name : whatever
-** Cluster Zookeeper hosts : zookeeper:2181
-** enable JMX polling
-* select the new cluster
+  * Cluster name : _whatever_
+  * Cluster Zookeeper hosts : _zookeeper:2181_
+  * enable JMX polling
+* select the new cluster and play
