@@ -25,9 +25,9 @@ docker-compose scale kafka=${KAFKANODES}
 ## create some random topics
 * install pwgen (here with ubuntu _yakkety yak_ ; if older version use apt-get instead, if redhat use yum) :
 ```
-[ -x /usr/bin/pwgen ] || ( apt update && apt install pwgen )
+[ -x /usr/bin/pwgen ] && echo "Already installed" || ( apt update && apt install pwgen )
 ```
- > pwgen is a password generator that we hijack here to generate topic names.
+ > we hijack the password generator for creating topic names.
 
 * create random topics with some random parameters :
 ```
@@ -46,6 +46,7 @@ done
 ```
 docker-compose run kafka /opt/kafka/bin/kafka-topics.sh \
  --zookeeper zookeeper:2181 --list > /tmp/alltopics
+echo "Number of topics in the cluster : $(wc -l /tmp/alltopics | cut -d ' '  -f 1)"
 ```
 * pick up a topic from the list, store it in a file and in a variable
 ```
@@ -65,8 +66,7 @@ export AVGTOPIC=$(/bin/cat /tmp/onetopic) && \
  export CLEANTOPIC="${AVGTOPIC//[$'\t\r\n ']}" ; \ 
  echo "Current random topic is $CLEANTOPIC"
 docker-compose run --name sub_${CLEANTOPIC} --rm kafka \
- /opt/kafka/bin/kafka-console-consumer.sh \
- --zookeeper zookeeper:2181 \
+ kafka-console-consumer.sh --zookeeper zookeeper:2181 \
  --from-beginning --topic ${CLEANTOPIC}
 ```
 
@@ -77,3 +77,9 @@ docker-compose run --name sub_${CLEANTOPIC} --rm kafka \
   * Cluster Zookeeper hosts : _zookeeper:2181_
   * enable JMX polling
 * select the new cluster and play
+
+## performance testing
+* tip to generate multiple messages to a broker as a producer, just like a basic _lorem ipsum_ :
+```
+tr -dc a-z1-4 </dev/urandom | tr 1-2 ' \n' | awk 'length==0 || length>50' | tr 3-4 ' ' | sed 's/^ *//' | cat -s | sed 's/ / /g' | fmt
+```
