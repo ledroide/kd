@@ -27,7 +27,7 @@ docker-compose scale kafka=${KAFKANODES}
 ```
 [ -x /usr/bin/pwgen ] || ( apt update && apt install pwgen )
 ```
-> pwgen is a password generator that we hijack here to generate topic names
+ > pwgen is a password generator that we hijack here to generate topic names.
 
 * create random topics with some random parameters :
 ```
