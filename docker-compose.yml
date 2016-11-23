@@ -1,0 +1,34 @@
+version: '2'
+
+services:
+  zookeeper:
+    image: dockerkafka/zookeeper
+    networks: 
+      - kafkanet
+    ports:
+    - "2181:2181"
+    - "2888:2888"
+    - "3888:3888"
+    - "5000:5000"
+
+  kafka:
+    image: dockerkafka/kafka
+    networks: 
+      - kafkanet
+    links:
+      - zookeeper:zookeeper
+
+  kafka-manager:
+    image: dockerkafka/kafka-manager
+    networks: 
+      - kafkanet
+    environment:
+      - ZK_HOSTS=zookeeper:2181
+    ports:
+      - "9000:9000"
+    links:
+      - zookeeper:zookeeper
+      - kafka:kafka
+
+networks:
+  kafkanet:
