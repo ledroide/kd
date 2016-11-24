@@ -1,4 +1,5 @@
-# kd : kafka on docker
+# kd : kafka on docker for testing purpose
+Just follow these steps to setup a kafka cluster and kafka-manager running in containers.
 
 ## clone repository
 ```
