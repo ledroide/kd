@@ -4,7 +4,7 @@
 ```
 git clone git@github.com:ledroide/kd.git
 ```
-## run a Kafka cluster including 4 KAFKANODES + zookeeper + kafka-manager
+## run a Kafka cluster including multiple nodes + zookeeper + kafka-manager
 * pwd near the compose file
 ```
 cd kd
