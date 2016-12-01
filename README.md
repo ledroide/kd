@@ -1,6 +1,11 @@
 # kd : kafka on docker for testing purpose
 Just follow these steps to setup a kafka cluster and kafka-manager running in containers.
 
+## requirements
+* docker >= 1.12
+* docker-compose >= 1.8 (because of version 2 syntax in yaml compose file)
+* user needs to be in the _docker_ system group (or to be _root_)
+
 ## clone repository
 ```
 git clone git@github.com:ledroide/kd.git
